@@ -1,0 +1,8 @@
+{
+  "name": "University Exam Prep Chatbot",
+  "description": "A multi-modal AI chatbot to help university students prepare for exams using a knowledge base of past questions. Supports text, image, and document inputs.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "prompt": ""
+}
