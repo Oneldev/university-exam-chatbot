@@ -39,7 +39,7 @@ const CodeBlock: React.FC<React.PropsWithChildren<any>> = ({ node, ...props }) =
 };
 
 
-export const MessageItem: React.FC<{ message: ChatMessage }> = ({ message }) => {
+const MessageItem: React.FC<{ message: ChatMessage }> = ({ message }) => {
   const isUser = message.sender === 'user';
 
   if (message.sender === 'system') {
@@ -70,7 +70,7 @@ export const MessageItem: React.FC<{ message: ChatMessage }> = ({ message }) => 
         <div className={`flex items-center justify-center h-8 w-8 rounded-full ${isUser ? 'bg-indigo-500' : 'bg-pink-500'} flex-shrink-0 text-white shadow`}>
           {isUser ? <UserIcon className="w-5 h-5" /> : <SparklesIcon className="w-5 h-5" />}
         </div>
-        <div className={`relative flex flex-col w-full ${isUser ? 'max-w-lg' : 'md:max-w-4xl lg:max-w-5xl'} ${isUser ? 'items-end' : 'items-start'}`}>
+        <div className={`relative flex flex-col w-full max-w-lg ${isUser ? 'items-end' : 'items-start'}`}>
           <div className={`text-base py-2.5 px-4 shadow rounded-2xl ${isUser ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-slate-700 text-gray-200 rounded-bl-none'} max-w-full overflow-hidden`}>
             {message.isLoading ? (
               <div className="flex items-center space-x-1 text-sm">
@@ -101,10 +101,15 @@ export const MessageItem: React.FC<{ message: ChatMessage }> = ({ message }) => 
               <p className="text-xs font-semibold text-gray-400 mb-1">Sources:</p>
               <ul className="space-y-1.5">
                 {message.groundingSources.map((source, index) => (
-                  <li key={index} className="text-xs bg-slate-700/50 p-2 rounded-md hover:bg-slate-700/80 transition-colors">
-                    <a href={source.uri} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-indigo-300 hover:text-indigo-200">
-                      <LinkIcon className="w-4 h-4 flex-shrink-0" />
-                      <span className="truncate">{source.title}</span>
+                  <li key={index} className="text-xs bg-slate-700/50 p-2 rounded-md hover:bg-slate-700 transition-colors">
+                    <a 
+                      href={source.uri} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center text-indigo-300 hover:text-indigo-200"
+                    >
+                      <LinkIcon className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{source.title || source.uri}</span>
                     </a>
                   </li>
                 ))}
@@ -115,3 +120,5 @@ export const MessageItem: React.FC<{ message: ChatMessage }> = ({ message }) => 
     </div>
   );
 };
+
+export default MessageItem;
