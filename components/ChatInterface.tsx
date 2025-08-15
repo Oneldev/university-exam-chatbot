@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChatMessage, ProcessedFile, FileCategory } from '../types';
-import MessageItem from './MessageItem';
+import { MessageItem } from './MessageItem';
 import FileUploadArea from './FileUploadArea';
 import { PaperAirplaneIcon, PaperClipIcon, XCircleIcon, StopIcon } from './icons';
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from '../constants';
