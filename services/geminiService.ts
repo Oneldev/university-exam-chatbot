@@ -1,6 +1,6 @@
 
-import { GoogleGenAI, GenerateContentResponse, Part, GroundingChunk } from "@google/genai";
-import { ProcessedFile, FileCategory, GroundingSource } from '../types';
+import { GoogleGenAI, GenerateContentResponse, Part, GroundingChunk, Content } from "@google/genai";
+import { ProcessedFile, FileCategory, GroundingSource, ChatMessage } from '../types';
 import { GEMINI_TEXT_MODEL, SYSTEM_INSTRUCTION } from '../constants';
 
 const API_KEY = process.env.API_KEY;
@@ -18,7 +18,7 @@ export interface BotResponse {
 }
 
 
-export const sendMessageToBot = (prompt: string, file: ProcessedFile | null, signal: AbortSignal): Promise<BotResponse> => {
+export const sendMessageToBot = (prompt: string, file: ProcessedFile | null, history: ChatMessage[], signal: AbortSignal): Promise<BotResponse> => {
   if (signal.aborted) {
     return Promise.reject(new DOMException('Request aborted by user', 'AbortError'));
   }
@@ -53,6 +53,9 @@ export const sendMessageToBot = (prompt: string, file: ProcessedFile | null, sig
               mockText += `\n(Text file content: "${file.content.substring(0,100)}...")`;
             }
           }
+          if (history.length > 0) {
+            mockText += `\n(Considering history of ${history.filter(m => m.sender !== 'system').length} messages).`;
+          }
           mockText += `\n\nNote: Google AI API key not configured. This is a simulated response.\n\n**Example Formatting:**\n* This is a list item.\n* So is this.\n\n\`\`\`javascript\n// Here is a code block\nconsole.log("Hello, world!");\n\`\`\``;
           await new Promise(res => setTimeout(res, 1500)); 
           if (signal.aborted) return;
@@ -61,33 +64,74 @@ export const sendMessageToBot = (prompt: string, file: ProcessedFile | null, sig
         }
 
         const model = ai.models;
-        const contents: Part[] = [];
+        
+        // Build chat history from previous messages, including images
+        const contentsHistory: Content[] = history
+            .filter(msg => (msg.sender === 'user' || msg.sender === 'bot') && !msg.isLoading && !msg.error)
+            .map(msg => {
+                const parts: Part[] = [];
+                if (msg.text) {
+                    parts.push({ text: msg.text });
+                }
+                if (msg.fileInfo && msg.fileInfo.content && msg.fileInfo.type.startsWith('image/')) {
+                    const base64Data = msg.fileInfo.content.split(',')[1];
+                    if (base64Data) {
+                        parts.push({
+                          inlineData: {
+                            mimeType: msg.fileInfo.type,
+                            data: base64Data,
+                          },
+                        });
+                    }
+                }
+                return ({
+                    role: msg.sender === 'user' ? 'user' : 'model' as 'user' | 'model',
+                    parts,
+                });
+            })
+            .filter(content => content.parts.length > 0);
 
+        // Create parts for the current message
+        const currentParts: Part[] = [];
         if (file) {
           if (file.type === FileCategory.IMAGE && file.content.startsWith('data:image')) {
             const base64Data = file.content.split(',')[1];
-            contents.push({
+            currentParts.push({
               inlineData: {
                 mimeType: file.mimeType,
                 data: base64Data,
               },
             });
           } else if (file.type === FileCategory.TEXT && file.content) {
-            contents.push({ text: `Context from uploaded text file (${file.name}):\n${file.content}` });
+            currentParts.push({ text: `Context from uploaded text file (${file.name}):\n${file.content}` });
           } else if (file.type === FileCategory.DOCUMENT && file.content) {
-            contents.push({ text: `Context from the uploaded document "${file.name}":\n${file.content}` });
+            currentParts.push({ text: `Context from the uploaded document "${file.name}":\n${file.content}` });
           }
         }
 
-        if (prompt) {
-          contents.push({ text: prompt });
-        } else if (contents.length === 0) {
-          contents.push({ text: "Analyze the provided attachment." });
+        let effectivePrompt = prompt;
+        if (!effectivePrompt && file) {
+            effectivePrompt = "Analyze the provided attachment, taking our conversation history into account.";
         }
         
+        if (effectivePrompt) {
+            currentParts.push({ text: effectivePrompt });
+        }
+
+        const finalContents: Content[] = [...contentsHistory];
+        if (currentParts.length > 0) {
+            finalContents.push({ role: 'user', parts: currentParts });
+        }
+        
+        // Ensure we're not sending an empty request or a request that doesn't end with a user turn
+        if (finalContents.length === 0 || finalContents[finalContents.length - 1].role !== 'user') {
+            resolve({ text: "Please provide a new prompt to continue." });
+            return;
+        }
+
         const response: GenerateContentResponse = await model.generateContent({
           model: GEMINI_TEXT_MODEL,
-          contents: { parts: contents }, 
+          contents: finalContents, 
           config: {
             systemInstruction: SYSTEM_INSTRUCTION,
           },

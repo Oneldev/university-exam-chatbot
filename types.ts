@@ -1,4 +1,5 @@
 
+
 export interface ChatMessage {
   id: string;
   text: string;
@@ -9,6 +10,7 @@ export interface ChatMessage {
     type: string; // MIME type
     size: number; // bytes
     previewUrl?: string; // For images, a base64 data URL
+    content?: string; // Base64 for images, text for docs
   };
   isLoading?: boolean; // For bot messages that are being generated
   error?: string; // If an error occurred generating this message

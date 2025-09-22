@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import ChatInterface from './components/ChatInterface';
 import ChatHistoryPanel from './components/ChatHistoryPanel';
@@ -121,7 +122,7 @@ const App: React.FC = () => {
       text: prompt,
       sender: 'user',
       timestamp: new Date(),
-      fileInfo: file ? { name: file.name, type: file.mimeType, size: file.size, previewUrl: file.previewUrl } : undefined,
+      fileInfo: file ? { name: file.name, type: file.mimeType, size: file.size, previewUrl: file.previewUrl, content: file.content } : undefined,
     };
 
     const botMessageId = `bot-${Date.now()}`;
@@ -133,10 +134,11 @@ const App: React.FC = () => {
       isLoading: true,
     };
     
+    const historyForApi = [...currentChatMessages];
     setCurrentChatMessages(prev => [...prev, userMessage, loadingBotMessage]);
 
     try {
-      const botResponse = await sendMessageToBot(prompt, file, controller.signal);
+      const botResponse = await sendMessageToBot(prompt, file, historyForApi, controller.signal);
       const finalBotMessage: ChatMessage = {
         ...loadingBotMessage,
         text: botResponse.text,

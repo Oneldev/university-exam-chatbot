@@ -49,30 +49,31 @@
 
     /* Styles for AI-generated Markdown content */
     .prose-chat {
-      color: inherit;
+      color: #cbd5e1; /* slate-300 */
       line-height: 1.7;
     }
     .prose-chat p:first-child, .prose-chat h1:first-child, .prose-chat h2:first-child, .prose-chat h3:first-child {
         margin-top: 0;
     }
     .prose-chat p {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
     }
     .prose-chat h1, .prose-chat h2, .prose-chat h3, .prose-chat h4 {
       margin-top: 2rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
       font-weight: 700;
       line-height: 1.3;
+      color: #f1f5f9; /* slate-100 */
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #334155; /* slate-700 */
+      border-bottom: 1px solid #475569; /* slate-600 */
     }
     .prose-chat h1:first-child, .prose-chat h2:first-child, .prose-chat h3:first-child {
         margin-top: 0.5rem;
     }
-    .prose-chat h1 { font-size: 1.3em; }
-    .prose-chat h2 { font-size: 1.2em; }
-    .prose-chat h3 { font-size: 1.1em; }
+    .prose-chat h1 { font-size: 1.4em; }
+    .prose-chat h2 { font-size: 1.25em; }
+    .prose-chat h3 { font-size: 1.15em; }
     .prose-chat ul, .prose-chat ol {
       margin-top: 1rem;
       margin-bottom: 1rem;
@@ -82,26 +83,31 @@
     .prose-chat ol { list-style-type: decimal; }
     .prose-chat li { margin-top: 0.5rem; padding-left: 0.25rem; }
     .prose-chat li > p { margin: 0; }
+    .prose-chat li::marker {
+        color: #818cf8; /* indigo-400 */
+    }
     .prose-chat pre {
-      background-color: #1e293b; /* slate-800, more subtle */
-      color: #e5e7eb; /* gray-200 */
+      background-color: #0f172a; /* slate-900 */
+      color: #e2e8f0; /* slate-200 */
       padding: 1.25rem;
       border-radius: 0.5rem;
       margin-top: 1.25rem;
       margin-bottom: 1.25rem;
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      white-space: pre-wrap !important; /* Force text wrapping to prevent horizontal scroll */
+      border: 1px solid #334155; /* slate-700 */
+      white-space: pre-wrap;
       word-break: break-word;
-      font-family: 'Inter', sans-serif;
-      line-height: 1.7; /* Increase line height for readability */
-      overflow-x: auto; /* Fallback scrolling for very long unbreakable strings */
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      line-height: 1.7;
+      overflow-x: auto;
     }
     .prose-chat code {
-      background-color: rgba(79, 70, 229, 0.2);
-      color: #c7d2fe;
-      padding: 0.15rem 0.3rem;
+      background-color: rgba(99, 102, 241, 0.2); /* indigo-500/20 */
+      color: #c7d2fe; /* indigo-200 */
+      padding: 0.2rem 0.4rem;
       border-radius: 0.25rem;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.9em;
       border: 1px solid rgba(99, 102, 241, 0.3);
     }
@@ -112,48 +118,50 @@
       border-radius: 0;
       border: none;
       color: inherit;
-    }
-    .prose-chat pre > code[class*="language-"] {
-      font-family: inherit; /* Use readable font even if language is detected */
+      font-size: inherit;
     }
     .prose-chat blockquote {
-      border-left: 4px solid #4f46e5;
-      padding: 0.5rem 1rem;
+      border-left: 4px solid #6366f1; /* indigo-500 */
+      padding: 0.75rem 1rem;
       margin: 1.25rem 0;
-      background-color: transparent;
-      color: #cbd5e1;
+      background-color: #1e293b; /* slate-800 */
+      color: #cbd5e1; /* slate-300 */
       font-style: normal;
+      border-radius: 0.25rem;
     }
     .prose-chat blockquote p {
       margin: 0;
     }
     .prose-chat a {
-      color: #a5b4fc;
+      color: #a5b4fc; /* indigo-300 */
       text-decoration: none;
       font-weight: 500;
-      border-bottom: 1px solid #a5b4fc;
+      border-bottom: 1px solid transparent;
       transition: color 0.2s ease, border-color 0.2s ease;
     }
     .prose-chat a:hover {
-        color: #c7d2fe;
+        color: #c7d2fe; /* indigo-200 */
         border-color: #c7d2fe;
     }
      .prose-chat table {
         width: 100%;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
         border-collapse: collapse;
     }
     .prose-chat th, .prose-chat td {
-        border: 1px solid #334155;
-        padding: 0.75rem;
+        border: 1px solid #475569; /* slate-600 */
+        padding: 0.75rem 1rem;
     }
     .prose-chat th {
         font-weight: 600;
-        background-color: #1e293b;
+        background-color: #1e293b; /* slate-800 */
+    }
+    .prose-chat tbody tr:nth-child(even) {
+        background-color: #1e293b99; /* slate-800 with opacity */
     }
     .prose-chat hr {
-        border-color: #334155;
+        border-color: #475569; /* slate-600 */
         margin-top: 2.5rem;
         margin-bottom: 2rem;
     }
